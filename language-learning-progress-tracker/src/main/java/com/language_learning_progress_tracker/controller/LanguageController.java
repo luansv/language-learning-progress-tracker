@@ -17,7 +17,7 @@ public class LanguageController {
     }
 
     @PostMapping
-    public Language create(@RequestBody Language language) {
+    public Language addLanguage(@RequestBody Language language) {
         return languageService.addLanguage(language);
     }
 
