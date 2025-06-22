@@ -33,7 +33,7 @@ public class UserService {
         UserDto userDtoResponse = new UserDto();
         userDtoResponse.setId(newUser.getId());
         userDtoResponse.setUsername(newUser.getUsername());
-        userDtoResponse.setUsername(newUser.getPassword());
+        userDtoResponse.setPassword(newUser.getPassword());
         return userDtoResponse;
     }
 

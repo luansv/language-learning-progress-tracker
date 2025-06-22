@@ -22,20 +22,32 @@ public class VocabularyService {
     private UserRepository userRepository;
     private LanguageRepository languageRepository;
 
-    public VocabularyService(VocabRepository vocabRepository, UserRepository userRepository) {
+    public VocabularyService(VocabRepository vocabRepository, UserRepository userRepository, LanguageRepository languageRepository) {
         this.vocabRepository = vocabRepository;
         this.userRepository = userRepository;
+        this.languageRepository = languageRepository;
     }
 
     public VocabDto addWord(Long id, VocabDto vocabularyDto) {
         Vocabulary vocabulary = mapToEntity(vocabularyDto);
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with associated language not found"));
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with associated language not found"));
         vocabulary.setUser(user);
+
+        List<Language> languages = languageRepository.findByNameIn(vocabularyDto.getLanguages());
+
+        if (languages.size() != vocabularyDto.getLanguages().size()) {
+            throw new LanguageNotFoundException("Some languages not found");
+        }
+
+        vocabulary.setLanguages(languages);
 
         Vocabulary newWord = vocabRepository.save(vocabulary);
 
         return mapToDto(newWord);
     }
+
 
     public VocabDto getWordById(Long wordId, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not associated with any id"));
@@ -56,36 +68,50 @@ public class VocabularyService {
         return words.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    public List<VocabDto> getWordsByLanguage(Long userId, String language) {
+    public List<VocabDto> getWordsByLanguages(Long userId, List<String> languageNames) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        Language language1 = languageRepository.findByName(language).orElseThrow(() -> new LanguageNotFoundException("Language not found!"));
+        List<Language> languages = languageRepository.findByNameIn(languageNames);
 
-        List<Vocabulary> words = vocabRepository.findByUserAndLanguage(user, language1);
+        if (languages.isEmpty()) {
+            throw new LanguageNotFoundException("No valid languages found");
+        }
+
+        List<Vocabulary> words = vocabRepository.findByUserAndLanguagesIn(user, languages);
 
         return words.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    public VocabDto updateWord(Long userId, Long vocabId, VocabDto vocabularyDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with associated word not found"));
-        Vocabulary vocabulary = vocabRepository.findById(vocabId).orElseThrow(() -> new UserNotFoundException("User with associated word not found"));
 
-        if (vocabulary.getUser().getId() != user.getId()) {
-            throw new WordNotFoundException("This word does not belong to a user");
+    public VocabDto updateWord(Long userId, Long vocabId, VocabDto vocabularyDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with associated word not found"));
+
+        Vocabulary vocabulary = vocabRepository.findById(vocabId)
+                .orElseThrow(() -> new UserNotFoundException("User with associated word not found"));
+
+        if (!vocabulary.getUser().getId().equals(user.getId())) {
+            throw new WordNotFoundException("This word does not belong to the user");
         }
 
         vocabulary.setWord(vocabularyDto.getWord());
         vocabulary.setMeaning(vocabularyDto.getMeaning());
-        vocabulary.setLanguage(vocabularyDto.getLanguage());
         vocabulary.setExample(vocabularyDto.getExample());
+
+        List<Language> languages = languageRepository.findByNameIn(vocabularyDto.getLanguages());
+        if (languages.size() != vocabularyDto.getLanguages().size()) {
+            throw new LanguageNotFoundException("Some languages not found");
+        }
+        vocabulary.setLanguages(languages);
 
         Vocabulary updatedVocab = vocabRepository.save(vocabulary);
 
         return mapToDto(updatedVocab);
     }
+
 
     public void deleteWord(Long userId, Long vocabId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with associated word not found"));
@@ -99,22 +125,28 @@ public class VocabularyService {
     }
 
     private VocabDto mapToDto(Vocabulary vocabulary) {
-        VocabDto vocabularyDto = new VocabDto();
-        vocabularyDto.setId(vocabulary.getId());
-        vocabularyDto.setWord(vocabulary.getWord());
-        vocabularyDto.setExample(vocabulary.getExample());
-        vocabularyDto.setMeaning(vocabulary.getMeaning());
-        vocabularyDto.setLanguage(vocabulary.getLanguage());
-        return vocabularyDto;
+        VocabDto dto = new VocabDto();
+        dto.setId(vocabulary.getId());
+        dto.setWord(vocabulary.getWord());
+        dto.setExample(vocabulary.getExample());
+        dto.setMeaning(vocabulary.getMeaning());
+
+        List<String> languageNames = vocabulary.getLanguages().stream()
+                .map(Language::getName)
+                .collect(Collectors.toList());
+        dto.setLanguages(languageNames);
+
+        return dto;
     }
 
-    private Vocabulary mapToEntity(VocabDto vocabularyDto) {
+
+    private Vocabulary mapToEntity(VocabDto dto) {
         Vocabulary vocabulary = new Vocabulary();
-        vocabulary.setId(vocabularyDto.getId());
-        vocabulary.setUser(vocabularyDto.getUser());
-        vocabulary.setLanguage(vocabularyDto.getLanguage());
-        vocabulary.setMeaning(vocabularyDto.getMeaning());
+        vocabulary.setId(dto.getId());
+        vocabulary.setWord(dto.getWord());
+        vocabulary.setExample(dto.getExample());
+        vocabulary.setMeaning(dto.getMeaning());
         return vocabulary;
-
     }
+
 }

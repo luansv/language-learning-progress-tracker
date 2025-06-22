@@ -4,12 +4,14 @@ package com.language_learning_progress_tracker.dto;
 import com.language_learning_progress_tracker.entity.Language;
 import com.language_learning_progress_tracker.entity.User;
 
+import java.util.List;
+
 public class LessonDto {
     private Long id;
     private String title;
     private String description;
-    private Language language;
-    private User user;
+    private List<String> languages;
+    private Long userId;
 
     public String getTitle() {
         return title;
@@ -27,14 +29,6 @@ public class LessonDto {
         this.description = description;
     }
 
-    public Language getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
-
     public Long getId() {
         return id;
     }
@@ -43,11 +37,21 @@ public class LessonDto {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
+
+    public List<String> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<String> languages) {
+        this.languages = languages;
+    }
+
+
 }

@@ -32,13 +32,14 @@ public class LessonController {
     }
 
     @GetMapping("users/{userId}/lessons")
-    public ResponseEntity<List<LessonDto>> getLessonByLanguage(
-            @PathVariable(value = "userId") Long userId,
-            @RequestParam(value = "language") String language){
+    public ResponseEntity<List<LessonDto>> getLessonsByLanguages(
+            @PathVariable Long userId,
+            @RequestParam List<String> languages) {
 
-        List<LessonDto> lessonByLanguage = lessonService.getLessonByLanguage(userId, language);
-        return ResponseEntity.ok(lessonByLanguage);
+        List<LessonDto> lessons = lessonService.getLessonByLanguage(userId, languages);
+        return ResponseEntity.ok(lessons);
     }
+
     @PutMapping("users/{userId}/lessons/{lessonId}")
     public ResponseEntity<LessonDto> updateLesson(@PathVariable Long userId,
                                                   @PathVariable Long lessonId,

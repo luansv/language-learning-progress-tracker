@@ -22,34 +22,43 @@ public class LessonService {
     private LanguageRepository languageRepository;
 
     public LessonDto createLesson(Long userId, LessonDto lessonDto){
-        Lesson lesson = mapToEntity(lessonDto);
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with associated lesson not found"));
-        lesson.setUser(user);
-        Lesson newLesson = lessonRepository.save(lesson);
-        return mapToDto(newLesson);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with associated lesson not found"));
+
+        Lesson lesson = mapToEntity(lessonDto, user);
+        Lesson saved = lessonRepository.save(lesson);
+        return mapToDto(saved);
+
     }
 
-    public List<LessonDto> getLessonByUserId(Long id){
-        List<Lesson> lessons = lessonRepository.findByUserId(id);
-
-        return lessons.stream().map(lesson -> mapToDto(lesson)).collect(Collectors.toList());
+    public List<LessonDto> getLessonByUserId(Long userid){
+        List<Lesson> lessons = lessonRepository.findByUserId(userid);
+        return lessons.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    public List<LessonDto> getLessonByLanguage(Long userid, String language){
+    public List<LessonDto> getLessonByLanguage(Long userid, List<String> languages){
 
-        User user = userRepository.findById(userid).orElseThrow(() -> new UserNotFoundException("User not found with current ID"));
+        User user = userRepository.findById(userid)
+                .orElseThrow(() -> new UserNotFoundException("User not found with current ID"));
 
-        Language language1 = languageRepository.findByName(language).orElseThrow(() -> new LanguageNotFoundException("Language not found!"));
+        List<Language> languageList = languageRepository.findByNameIn(languages);
 
-        List<Lesson> lessons = lessonRepository.findByUserAndLanguage(user, language1);
-        return lessons.stream().map(this::mapToDto).collect(Collectors.toList());    }
+        if (languageList.isEmpty()){
+            throw new LanguageNotFoundException("No matching language found");
+        }
+        List<Lesson> lessons = lessonRepository.findByUserAndLanguagesIn(user, languageList);
+        return lessons.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
 
     public LessonDto getLessonById(Long lessonId, Long userId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with associated lesson not found"));
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonNotFoundException("Lesson with associate user not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (lesson.getUser().getId() != user.getId()){
-            throw new LessonNotFoundException("This lesson does not belong to a user");
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new LessonNotFoundException("Lesson not found"));
+
+        if (!lesson.getUser().getId().equals(user.getId())){
+            throw new LessonNotFoundException("This lesson does not belong to the user");
         }
 
         return mapToDto(lesson);
@@ -57,26 +66,38 @@ public class LessonService {
 
 
     public LessonDto updateLesson(Long userId, Long lessonId, LessonDto lessonDto){
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with associated lesson not found"));
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonNotFoundException("Lesson with associate user not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new LessonNotFoundException("Lesson not found"));
 
-        if (lesson.getUser().getId() != user.getId()){
-            throw new LessonNotFoundException("This lesson does not belong to a user");
+        if (!lesson.getUser().getId().equals(user.getId())) {
+            throw new LessonNotFoundException("This lesson does not belong to the user");
+        }
+
+        List<Language> languages = languageRepository.findByNameIn(lessonDto.getLanguages());
+
+        if( languages.size() != lessonDto.getLanguages().size()){
+            throw new LanguageNotFoundException("Some languages not found");
         }
 
         lesson.setTitle(lessonDto.getTitle());
-        lesson.setLanguage(lessonDto.getLanguage());
         lesson.setDescription(lessonDto.getDescription());
+        lesson.setLanguages(languages);
+
         Lesson updatedLesson = lessonRepository.save(lesson);
         return mapToDto(updatedLesson);
     }
 
     public void deleteLesson(Long userId, Long lessonId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with associated lesson not found"));
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonNotFoundException("Lesson with associate user not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (lesson.getUser().getId() != user.getId()){
-            throw new LessonNotFoundException("This lesson does not belong to a user");
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new LessonNotFoundException("Lesson not found"));
+
+        if (!lesson.getUser().getId().equals(user.getId())) {
+            throw new LessonNotFoundException("This lesson does not belong to the user");
         }
 
         lessonRepository.delete(lesson);
@@ -87,17 +108,30 @@ public class LessonService {
         LessonDto lessonDto = new LessonDto();
         lessonDto.setId(lesson.getId());
         lessonDto.setTitle(lesson.getTitle());
-        lessonDto.setLanguage(lesson.getLanguage());
         lessonDto.setDescription(lesson.getDescription());
+        List<String> languageNames = lesson.getLanguages().stream()
+                .map(Language::getName)
+                .collect(Collectors.toList());
+
+        lessonDto.setLanguages(languageNames);
         return lessonDto;
     }
 
-    private Lesson mapToEntity(LessonDto lessonDto){
+    private Lesson mapToEntity(LessonDto lessonDto, User user) {
         Lesson lesson = new Lesson();
-        lesson.setId(lessonDto.getId());
         lesson.setTitle(lessonDto.getTitle());
-        lesson.setLanguage(lessonDto.getLanguage());
         lesson.setDescription(lessonDto.getDescription());
+        lesson.setUser(user);
+
+        List<Language> languageEntities = languageRepository.findByNameIn(lessonDto.getLanguages());
+
+        if (languageEntities.size() != lessonDto.getLanguages().size()) {
+            throw new RuntimeException("Some languages were not found in the database");
+        }
+
+        lesson.setLanguages(languageEntities);
+
         return lesson;
     }
+
 }

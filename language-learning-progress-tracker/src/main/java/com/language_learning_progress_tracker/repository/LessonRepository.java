@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
     List<Lesson> findByUserId(Long userId);
-    List<Lesson> findByLanguage(Language language);
-    List<Lesson> findByUserAndLanguage(User user, Language language);
+    List<Lesson> findByLanguages(Language language);
+    List<Lesson> findByUserAndLanguagesIn(User user, List<Language> languages);
 }

@@ -25,9 +25,10 @@ public class LanguageController {
         return ResponseEntity.ok(languageService.getLanguageById(id));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<LanguageDto> getLanguageByName(@RequestParam String name) {
-        return ResponseEntity.ok(languageService.getLanguageByName(name));
+    @GetMapping("/languages/names")
+    public ResponseEntity<List<LanguageDto>> getLanguagesByNames(@RequestParam List<String> names) {
+        List<LanguageDto> result = languageService.getLanguagesByNames(names);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping

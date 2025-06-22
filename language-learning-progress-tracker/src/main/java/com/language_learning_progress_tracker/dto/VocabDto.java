@@ -3,13 +3,15 @@ package com.language_learning_progress_tracker.dto;
 import com.language_learning_progress_tracker.entity.Language;
 import com.language_learning_progress_tracker.entity.User;
 
+import java.util.List;
+
 public class VocabDto {
     private Long id;
     private User user;
     private String word;
     private String example;
     private String meaning;
-    private Language language;
+    private List<String> languages;
 
     public Long getId() {
         return id;
@@ -51,11 +53,11 @@ public class VocabDto {
         this.meaning = meaning;
     }
 
-    public Language getLanguage() {
-        return language;
+    public List<String> getLanguages() {
+        return languages;
     }
 
-    public void setLanguage(Language language) {
-        this.language = language;
+    public void setLanguages(List<String> language) {
+        this.languages = language;
     }
 }

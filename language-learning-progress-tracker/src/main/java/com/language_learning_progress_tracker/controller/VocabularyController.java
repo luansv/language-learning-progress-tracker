@@ -19,8 +19,8 @@ public class VocabularyController {
     }
 
     @GetMapping("users/{userId}/vocab/lang")
-    public ResponseEntity<List<VocabDto>> getWordsByLanguage(@PathVariable Long id, @RequestParam String language){
-        List<VocabDto> wordsByLanguage = vocabularyService.getWordsByLanguage(id, language);
+    public ResponseEntity<List<VocabDto>> getWordsByLanguage(@PathVariable Long id, @RequestParam List<String> languages){
+        List<VocabDto> wordsByLanguage = vocabularyService.getWordsByLanguages(id, languages);
         return ResponseEntity.ok(wordsByLanguage);
     }
 

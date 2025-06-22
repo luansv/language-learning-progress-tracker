@@ -2,6 +2,8 @@ package com.language_learning_progress_tracker.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "vocabulary")
 public class Vocabulary {
@@ -17,17 +19,30 @@ public class Vocabulary {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "language_id")
-    private Language language;
+    @ManyToMany
+    @JoinTable(
+            name = "vocabulary_language",
+            joinColumns = @JoinColumn(name = "vocabulary_id"),
+            inverseJoinColumns = @JoinColumn(name = "language_id")
+    )
+    private List<Language> languages;
 
-    public Vocabulary(Long id, String word, String example, String meaning, User user, Language language) {
+
+    public Vocabulary(Long id, String word, String example, String meaning, User user, List<Language> languages) {
         this.id = id;
         this.word = word;
         this.example = example;
         this.meaning = meaning;
         this.user = user;
-        this.language = language;
+        this.languages = languages;
+    }
+
+    public List<Language> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<Language> languages) {
+        this.languages = languages;
     }
 
     public Vocabulary() {
@@ -73,11 +88,5 @@ public class Vocabulary {
         this.user = user;
     }
 
-    public Language getLanguage() {
-        return language;
-    }
 
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
 }

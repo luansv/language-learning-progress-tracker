@@ -34,11 +34,18 @@ public class LanguageService {
         return mapToDto(language);
     }
 
-    public LanguageDto getLanguageByName(String name) {
-        Language language = languageRepository.findByName(name)
-                .orElseThrow(() -> new LanguageNotFoundException("Language not found: " + name));
-        return mapToDto(language);
+    public List<LanguageDto> getLanguagesByNames(List<String> names) {
+        List<Language> languages = languageRepository.findByNameIn(names);
+
+        if (languages.size() != names.size()) {
+            throw new LanguageNotFoundException("Some languages were not found");
+        }
+
+        return languages.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
+
 
     public LanguageDto createLanguage(LanguageDto languageDto) {
         Language language = mapToEntity(languageDto);
