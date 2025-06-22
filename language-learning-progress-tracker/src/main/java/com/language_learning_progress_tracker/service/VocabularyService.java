@@ -4,8 +4,10 @@ import com.language_learning_progress_tracker.dto.VocabDto;
 import com.language_learning_progress_tracker.entity.Language;
 import com.language_learning_progress_tracker.entity.User;
 import com.language_learning_progress_tracker.entity.Vocabulary;
+import com.language_learning_progress_tracker.exception.LanguageNotFoundException;
 import com.language_learning_progress_tracker.exception.UserNotFoundException;
 import com.language_learning_progress_tracker.exception.WordNotFoundException;
+import com.language_learning_progress_tracker.repository.LanguageRepository;
 import com.language_learning_progress_tracker.repository.UserRepository;
 import com.language_learning_progress_tracker.repository.VocabRepository;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,11 @@ import java.util.stream.Collectors;
 public class VocabularyService {
     private VocabRepository vocabRepository;
     private UserRepository userRepository;
+    private LanguageRepository languageRepository;
 
-    public VocabularyService(VocabRepository vocabRepository) {
+    public VocabularyService(VocabRepository vocabRepository, UserRepository userRepository) {
         this.vocabRepository = vocabRepository;
+        this.userRepository = userRepository;
     }
 
     public VocabDto addWord(Long id, VocabDto vocabularyDto) {
@@ -56,7 +60,9 @@ public class VocabularyService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        List<Vocabulary> words = vocabRepository.findByUserAndLanguage(userId, language);
+        Language language1 = languageRepository.findByName(language).orElseThrow(() -> new LanguageNotFoundException("Language not found!"));
+
+        List<Vocabulary> words = vocabRepository.findByUserAndLanguage(user, language1);
 
         return words.stream()
                 .map(this::mapToDto)

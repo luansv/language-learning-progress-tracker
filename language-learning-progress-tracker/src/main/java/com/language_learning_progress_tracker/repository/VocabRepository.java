@@ -10,5 +10,5 @@ import java.util.List;
 public interface VocabRepository extends JpaRepository<Vocabulary, Long> {
     List<Vocabulary> findByUser(User userId);
     List<Vocabulary> findByLanguage(Language language);
-    List<Vocabulary> findByUserAndLanguage(Long userId, String language);
+    List<Vocabulary> findByUserAndLanguage(User userId, Language language);
 }

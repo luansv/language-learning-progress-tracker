@@ -3,6 +3,7 @@ package com.language_learning_progress_tracker.controller;
 import com.language_learning_progress_tracker.dto.UserDto;
 import com.language_learning_progress_tracker.dto.UserResponse;
 import com.language_learning_progress_tracker.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("user")
     public ResponseEntity<UserResponse> getUser(

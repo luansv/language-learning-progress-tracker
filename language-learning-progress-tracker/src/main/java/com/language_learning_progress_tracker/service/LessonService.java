@@ -4,8 +4,10 @@ import com.language_learning_progress_tracker.dto.LessonDto;
 import com.language_learning_progress_tracker.entity.Language;
 import com.language_learning_progress_tracker.entity.Lesson;
 import com.language_learning_progress_tracker.entity.User;
+import com.language_learning_progress_tracker.exception.LanguageNotFoundException;
 import com.language_learning_progress_tracker.exception.LessonNotFoundException;
 import com.language_learning_progress_tracker.exception.UserNotFoundException;
+import com.language_learning_progress_tracker.repository.LanguageRepository;
 import com.language_learning_progress_tracker.repository.LessonRepository;
 import com.language_learning_progress_tracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class LessonService {
     private LessonRepository lessonRepository;
     private UserRepository userRepository;
+    private LanguageRepository languageRepository;
 
     public LessonDto createLesson(Long userId, LessonDto lessonDto){
         Lesson lesson = mapToEntity(lessonDto);
@@ -32,9 +35,13 @@ public class LessonService {
         return lessons.stream().map(lesson -> mapToDto(lesson)).collect(Collectors.toList());
     }
 
-    public List<LessonDto> getLessonByLanguage(Long userid, Language language){
-        List<Lesson> lessons = lessonRepository.findByLanguage(language);
+    public List<LessonDto> getLessonByLanguage(Long userid, String language){
 
+        User user = userRepository.findById(userid).orElseThrow(() -> new UserNotFoundException("User not found with current ID"));
+
+        Language language1 = languageRepository.findByName(language).orElseThrow(() -> new LanguageNotFoundException("Language not found!"));
+
+        List<Lesson> lessons = lessonRepository.findByUserAndLanguage(user, language1);
         return lessons.stream().map(this::mapToDto).collect(Collectors.toList());    }
 
     public LessonDto getLessonById(Long lessonId, Long userId){

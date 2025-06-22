@@ -5,6 +5,7 @@ import com.language_learning_progress_tracker.dto.UserResponse;
 import com.language_learning_progress_tracker.entity.User;
 import com.language_learning_progress_tracker.exception.UserNotFoundException;
 import com.language_learning_progress_tracker.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public UserDto createUser(UserDto userDto){
         User user = new User();
@@ -27,6 +33,7 @@ public class UserService {
         UserDto userDtoResponse = new UserDto();
         userDtoResponse.setId(newUser.getId());
         userDtoResponse.setUsername(newUser.getUsername());
+        userDtoResponse.setUsername(newUser.getPassword());
         return userDtoResponse;
     }
 

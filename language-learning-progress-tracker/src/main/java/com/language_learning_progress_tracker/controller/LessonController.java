@@ -34,7 +34,7 @@ public class LessonController {
     @GetMapping("users/{userId}/lessons")
     public ResponseEntity<List<LessonDto>> getLessonByLanguage(
             @PathVariable(value = "userId") Long userId,
-            @RequestParam(value = "language") Language language){
+            @RequestParam(value = "language") String language){
 
         List<LessonDto> lessonByLanguage = lessonService.getLessonByLanguage(userId, language);
         return ResponseEntity.ok(lessonByLanguage);
