@@ -1,9 +1,12 @@
 package com.language_learning_progress_tracker.controller;
 
 import com.language_learning_progress_tracker.dto.AuthenticationDTO;
+import com.language_learning_progress_tracker.dto.LoginResponseDto;
 import com.language_learning_progress_tracker.dto.RegisterDto;
 import com.language_learning_progress_tracker.entity.User;
 import com.language_learning_progress_tracker.repository.UserRepository;
+import com.language_learning_progress_tracker.security.CustomUserDetails;
+import com.language_learning_progress_tracker.security.TokenGenerator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/")
 public class AuthController {
 
     @Autowired
@@ -26,12 +29,20 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TokenGenerator tokenGenerator;
+
     @PostMapping("login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data){
        var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
-       var auth = authenticationManager.authenticate(usernamePassword);
+       var auth = this.authenticationManager.authenticate(usernamePassword);
 
-       return ResponseEntity.ok().build();
+        var customUserDetails = (CustomUserDetails) auth.getPrincipal();
+        User user = customUserDetails.getUser();
+
+        var token = tokenGenerator.generateToken(user);
+
+       return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
 

@@ -2,6 +2,7 @@ package com.language_learning_progress_tracker.service;
 
 import com.language_learning_progress_tracker.entity.User;
 import com.language_learning_progress_tracker.repository.UserRepository;
+import com.language_learning_progress_tracker.security.CustomUserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,16 +26,6 @@ public class CustomUserDetailService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                getAuthority(user)
-        );
-    }
-
-    private Collection<? extends GrantedAuthority> getAuthority(User user) {
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
-        return List.of(authority);
-
+        return new CustomUserDetails(user);
     }
 }

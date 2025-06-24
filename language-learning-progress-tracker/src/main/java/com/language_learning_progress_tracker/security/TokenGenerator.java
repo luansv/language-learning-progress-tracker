@@ -26,7 +26,7 @@ public class TokenGenerator {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
             return JWT.create()
-                    .withSubject("auth-api")
+                    .withIssuer("auth-api")
                     .withSubject(user.getUsername())
                     .withExpiresAt(expirateDate)
                     .sign(algorithm);
