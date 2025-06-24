@@ -21,6 +21,12 @@ public class LessonService {
     private UserRepository userRepository;
     private LanguageRepository languageRepository;
 
+    public LessonService(LessonRepository lessonRepository, UserRepository userRepository, LanguageRepository languageRepository) {
+        this.lessonRepository = lessonRepository;
+        this.userRepository = userRepository;
+        this.languageRepository = languageRepository;
+    }
+
     public LessonDto createLesson(Long userId, LessonDto lessonDto){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with associated lesson not found"));

@@ -15,6 +15,10 @@ import java.util.List;
 public class LanguageController {
     private LanguageService languageService;
 
+    public LanguageController(LanguageService languageService) {
+        this.languageService = languageService;
+    }
+
     @GetMapping
     public ResponseEntity<List<LanguageDto>> getAllLanguages() {
         return ResponseEntity.ok(languageService.getAllLanguages());

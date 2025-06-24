@@ -15,13 +15,17 @@ import java.util.List;
 public class LessonController {
     private LessonService lessonService;
 
-    @PostMapping("users/{userId}/lessons")
+    public LessonController(LessonService lessonService) {
+        this.lessonService = lessonService;
+    }
+
+    @PostMapping("user/{userId}/lessons")
     public ResponseEntity<LessonDto> createLesson (@PathVariable(value = "userId") Long userId,
                                                    @RequestBody LessonDto lessonDto){
         return new ResponseEntity<>(lessonService.createLesson(userId, lessonDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("users/{userId}/lessons/{lessonId}")
+    @GetMapping("user/{userId}/lessons/{lessonId}")
     public ResponseEntity<LessonDto> getLessonById(
             @PathVariable(value = "userId") Long userId,
             @PathVariable(value = "lessonId") Long lessonId)
@@ -31,7 +35,7 @@ public class LessonController {
         return new ResponseEntity<>(lessonByIdDto, HttpStatus.OK);
     }
 
-    @GetMapping("users/{userId}/lessons")
+    @GetMapping("user/{userId}/lessons")
     public ResponseEntity<List<LessonDto>> getLessonsByLanguages(
             @PathVariable Long userId,
             @RequestParam List<String> languages) {
@@ -40,7 +44,7 @@ public class LessonController {
         return ResponseEntity.ok(lessons);
     }
 
-    @PutMapping("users/{userId}/lessons/{lessonId}")
+    @PutMapping("user/{userId}/lessons/{lessonId}")
     public ResponseEntity<LessonDto> updateLesson(@PathVariable Long userId,
                                                   @PathVariable Long lessonId,
                                                   @RequestBody LessonDto lessonDto) {
@@ -48,7 +52,7 @@ public class LessonController {
         return new ResponseEntity<>(updatedLesson, HttpStatus.OK);
     }
 
-    @DeleteMapping("users/{userId}/lessons/{lessonId}")
+    @DeleteMapping("user/{userId}/lessons/{lessonId}")
     public ResponseEntity<String> deleteLesson(@PathVariable Long userId,
                                                @PathVariable Long lessonId) {
         lessonService.deleteLesson(userId, lessonId);

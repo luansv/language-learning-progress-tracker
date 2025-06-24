@@ -10,10 +10,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface VocabRepository extends JpaRepository<Vocabulary, Long> {
-    List<Vocabulary> findByUser(User userId);
-    List<Vocabulary> findByLanguage(Language language);
+    List<Vocabulary> findByUser(User user);
 
-    @Query("SELECT v FROM Vocabulary v JOIN v.languages l WHERE v.user = :user AND l IN :languages")
-    List<Vocabulary> findByUserAndLanguagesIn(@Param("user") User user,
-                                              @Param("languages") List<Language> languages);
+    List<Vocabulary> findByUserAndLanguagesIn(User user, List<Language> languages);
+
+    List<Vocabulary> findByLanguages(Language languages);
+
+    List<Vocabulary> findByLanguagesIn(List<Language> languages);
+
 }

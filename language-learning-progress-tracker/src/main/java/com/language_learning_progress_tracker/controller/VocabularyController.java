@@ -13,36 +13,40 @@ import java.util.List;
 public class VocabularyController {
     private VocabularyService vocabularyService;
 
-    @PostMapping("users/{userId}/vocab")
+    public VocabularyController(VocabularyService vocabularyService) {
+        this.vocabularyService = vocabularyService;
+    }
+
+    @PostMapping("user/{userId}/vocab")
     public ResponseEntity<VocabDto> addWord(@PathVariable Long userId, @RequestBody VocabDto vocabularyDto) {
         return new ResponseEntity<>(vocabularyService.addWord(userId, vocabularyDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("users/{userId}/vocab/lang")
-    public ResponseEntity<List<VocabDto>> getWordsByLanguage(@PathVariable Long id, @RequestParam List<String> languages){
-        List<VocabDto> wordsByLanguage = vocabularyService.getWordsByLanguages(id, languages);
+    @GetMapping("user/{userId}/vocab/lang")
+    public ResponseEntity<List<VocabDto>> getWordsByLanguage(@PathVariable Long userId, @RequestParam List<String> languages){
+        List<VocabDto> wordsByLanguage = vocabularyService.getWordsByLanguages(userId, languages);
         return ResponseEntity.ok(wordsByLanguage);
     }
 
-    @GetMapping("users/{userId}/vocab")
+    @GetMapping("user/{userId}/vocab")
     public List<VocabDto> getWordsByUserId(@PathVariable Long userId) {
         return vocabularyService.getWordsByUserId(userId);
     }
 
-    @GetMapping("users/{userId}/vocab/{id}")
+    @GetMapping("user/{userId}/vocab/{id}")
     public ResponseEntity<VocabDto> getWordsById(@PathVariable Long userId, @PathVariable Long id) {
         VocabDto wordById = vocabularyService.getWordById(id, userId);
         return new ResponseEntity<>(wordById, HttpStatus.OK);
     }
 
-    @PutMapping("users/{userId}/vocab/{id}")
+    @PutMapping("user/{userId}/vocab/{id}")
     public ResponseEntity<VocabDto> updateWord(@PathVariable Long userId, @PathVariable Long id,
                                                @RequestBody VocabDto vocabularyDto) {
         VocabDto updatedWord = vocabularyService.updateWord(userId, id, vocabularyDto);
         return new ResponseEntity<>(updatedWord, HttpStatus.OK);
     }
 
-    @DeleteMapping("users/{userId}/vocab/{id}")
+    @DeleteMapping("user/{userId}/vocab/{id}")
     public ResponseEntity<String> deleteWord(@PathVariable Long userId, @PathVariable Long id) {
         vocabularyService.deleteWord(userId, id);
         return new ResponseEntity<>("Word deleted successfully", HttpStatus.OK);
