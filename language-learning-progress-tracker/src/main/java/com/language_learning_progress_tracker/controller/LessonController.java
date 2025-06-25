@@ -1,8 +1,6 @@
 package com.language_learning_progress_tracker.controller;
 
 import com.language_learning_progress_tracker.dto.LessonDto;
-import com.language_learning_progress_tracker.entity.Language;
-import com.language_learning_progress_tracker.repository.LessonRepository;
 import com.language_learning_progress_tracker.service.LessonService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

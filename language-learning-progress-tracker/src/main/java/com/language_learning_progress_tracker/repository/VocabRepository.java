@@ -18,4 +18,5 @@ public interface VocabRepository extends JpaRepository<Vocabulary, Long> {
 
     List<Vocabulary> findByLanguagesIn(List<Language> languages);
 
+    List<Vocabulary> findByUserId(Long userId);
 }

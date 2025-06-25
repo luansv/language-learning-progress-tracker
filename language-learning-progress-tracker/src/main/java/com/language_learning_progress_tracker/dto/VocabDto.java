@@ -7,7 +7,6 @@ import java.util.List;
 
 public class VocabDto {
     private Long id;
-    private User user;
     private String word;
     private String example;
     private String meaning;
@@ -19,14 +18,6 @@ public class VocabDto {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getWord() {

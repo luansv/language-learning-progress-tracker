@@ -4,6 +4,7 @@ import com.language_learning_progress_tracker.dto.AuthenticationDTO;
 import com.language_learning_progress_tracker.dto.LoginResponseDto;
 import com.language_learning_progress_tracker.dto.RegisterDto;
 import com.language_learning_progress_tracker.entity.User;
+import com.language_learning_progress_tracker.entity.UserRole;
 import com.language_learning_progress_tracker.repository.UserRepository;
 import com.language_learning_progress_tracker.security.CustomUserDetails;
 import com.language_learning_progress_tracker.security.TokenGenerator;
@@ -53,7 +54,7 @@ public class AuthController {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDto.password());
-        User newUser = new User(registerDto.username(), encryptedPassword, registerDto.role());
+        User newUser = new User(registerDto.username(), encryptedPassword, UserRole.USER);
 
         userRepository.save(newUser);
         return new ResponseEntity<>("User registered successfully!", HttpStatus.OK);

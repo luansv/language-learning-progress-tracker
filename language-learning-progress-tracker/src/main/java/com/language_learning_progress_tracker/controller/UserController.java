@@ -1,12 +1,15 @@
 package com.language_learning_progress_tracker.controller;
 
 import com.language_learning_progress_tracker.dto.UserDto;
+import com.language_learning_progress_tracker.dto.UserOverviewDto;
 import com.language_learning_progress_tracker.dto.UserResponse;
 import com.language_learning_progress_tracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
@@ -17,15 +20,17 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("user")
-    public ResponseEntity<UserResponse> getUser(
-            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
-    ){
-        return new ResponseEntity<>(userService.getAllUsers(pageNo, pageSize), HttpStatus.OK);
+    @GetMapping("users")
+    public ResponseEntity<List<UserDto>> getAllUsers(){
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("user/id/{id}")
+    @GetMapping("/{userId}/overview")
+    public ResponseEntity<UserOverviewDto> getUserOverview(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUserOverview(userId));
+    }
+
+    @GetMapping("user/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id){
         return ResponseEntity.ok(userService.getUserById(id));
     }
@@ -41,13 +46,13 @@ public class UserController {
         return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("user/id/{id}/update")
+    @PutMapping("user/{id}/update")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable("id") Long userId){
         UserDto response = userService.updateUser(userDto, userId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("user/id/{id}/delete")
+    @DeleteMapping("user/{id}/delete")
     public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId){
         userService.deleteUserById(userId);
         return new ResponseEntity<>("User deleted", HttpStatus.OK);
