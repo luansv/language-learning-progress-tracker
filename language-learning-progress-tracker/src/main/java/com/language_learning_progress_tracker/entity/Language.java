@@ -18,6 +18,10 @@ public class Language {
         this.id = id;
     }
 
+    public Language(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

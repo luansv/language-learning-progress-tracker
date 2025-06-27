@@ -39,6 +39,13 @@ public class Lesson {
         this.user = user;
     }
 
+    public Lesson(String title, String description, List<Language> languages, User user) {
+        this.title = title;
+        this.description = description;
+        this.languages = languages;
+        this.user = user;
+    }
+
     public Long getId() {
         return id;
     }

@@ -4,8 +4,6 @@ import com.language_learning_progress_tracker.entity.Language;
 import com.language_learning_progress_tracker.entity.User;
 import com.language_learning_progress_tracker.entity.Vocabulary;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

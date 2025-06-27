@@ -37,6 +37,14 @@ public class Vocabulary {
         this.languages = languages;
     }
 
+    public Vocabulary(String word, String example, String meaning, User user, List<Language> languages) {
+        this.word = word;
+        this.example = example;
+        this.meaning = meaning;
+        this.user = user;
+        this.languages = languages;
+    }
+
     public List<Language> getLanguages() {
         return languages;
     }
