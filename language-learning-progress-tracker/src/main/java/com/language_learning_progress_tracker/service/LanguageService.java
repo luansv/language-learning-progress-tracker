@@ -2,8 +2,11 @@ package com.language_learning_progress_tracker.service;
 
 import com.language_learning_progress_tracker.dto.LanguageDto;
 import com.language_learning_progress_tracker.entity.Language;
+import com.language_learning_progress_tracker.entity.User;
 import com.language_learning_progress_tracker.exception.LanguageNotFoundException;
+import com.language_learning_progress_tracker.exception.UserNotFoundException;
 import com.language_learning_progress_tracker.repository.LanguageRepository;
+import com.language_learning_progress_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +18,12 @@ import java.util.stream.Collectors;
 public class LanguageService {
 
     private final LanguageRepository languageRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public LanguageService(LanguageRepository languageRepository) {
+    public LanguageService(LanguageRepository languageRepository, UserRepository userRepository) {
         this.languageRepository = languageRepository;
+        this.userRepository = userRepository;
     }
 
     public List<LanguageDto> getAllLanguages() {
@@ -53,11 +58,22 @@ public class LanguageService {
         return mapToDto(saved);
     }
 
+    public LanguageDto updateLanguage(Long userId, Long langId, LanguageDto languageDto){
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new UserNotFoundException("User not found"));
+        Language language = languageRepository.findById(langId)
+                .orElseThrow(() -> new LanguageNotFoundException("Language not found"));
+
+        language.setName(languageDto.getName());
+
+        Language updatedLang = languageRepository.save(language);
+        return mapToDto(updatedLang);
+    }
+
     public void deleteLanguage(Long id) {
-        if (!languageRepository.existsById(id)) {
-            throw new LanguageNotFoundException("Language not found with ID: " + id);
-        }
-        languageRepository.deleteById(id);
+        Language language = languageRepository.findById(id)
+                .orElseThrow(() -> new LanguageNotFoundException("Language not found"));
+        languageRepository.delete(language);
     }
 
     private LanguageDto mapToDto(Language language) {

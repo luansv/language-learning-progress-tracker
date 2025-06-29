@@ -29,10 +29,19 @@ public class LanguageController {
         return ResponseEntity.ok(languageService.getLanguageById(id));
     }
 
-    @GetMapping("/languages/names")
+    @GetMapping("/names")
     public ResponseEntity<List<LanguageDto>> getLanguagesByNames(@RequestParam List<String> names) {
         List<LanguageDto> result = languageService.getLanguagesByNames(names);
         return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{userId}/{langId}")
+    public ResponseEntity<LanguageDto> updateLanguage(
+            @PathVariable Long userId,
+            @PathVariable Long langId,
+            @RequestBody LanguageDto languageDto){
+        LanguageDto updatedLanguage = languageService.updateLanguage(userId, langId, languageDto);
+        return new ResponseEntity<>(updatedLanguage, HttpStatus.OK);
     }
 
     @PostMapping

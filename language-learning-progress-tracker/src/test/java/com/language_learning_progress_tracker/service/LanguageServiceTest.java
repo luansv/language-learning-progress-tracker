@@ -2,7 +2,9 @@ package com.language_learning_progress_tracker.service;
 
 import com.language_learning_progress_tracker.dto.LanguageDto;
 import com.language_learning_progress_tracker.entity.Language;
+import com.language_learning_progress_tracker.entity.User;
 import com.language_learning_progress_tracker.repository.LanguageRepository;
+import com.language_learning_progress_tracker.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,11 +26,14 @@ class LanguageServiceTest {
     @Mock
     private LanguageRepository languageRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private LanguageService languageService;
 
     @Test
-    void LanguageService_getLanguagesById_ReturnLanguages() {
+    void LanguageService_getLanguagesById_ReturnLanguagesDTO() {
         Language language = new Language("German");
         language.setId(1L);
 
@@ -42,7 +47,7 @@ class LanguageServiceTest {
 
 
     @Test
-    void getLanguagesByNames_ReturnsMatchingLanguages() {
+    void LanguageService_getLanguagesByNames_ReturnsMatchingLanguagesDto() {
         List<String> names = List.of("German", "Thai");
 
         Language german = new Language("German");
@@ -62,10 +67,60 @@ class LanguageServiceTest {
     }
 
     @Test
-    void createLanguage() {
+    void LanguageService_createLanguage_ReturnLanguageDto() {
+        Language language = new Language("Spanish");
+        LanguageDto languageDto = new LanguageDto();
+        languageDto.setName("Spanish");
+
+        when(languageRepository.save
+                (Mockito.any(Language.class))).thenReturn(language);
+
+        LanguageDto savedLanguage = languageService.createLanguage(languageDto);
+
+        Assertions.assertNotNull(savedLanguage);
     }
 
     @Test
-    void deleteLanguage() {
+    void LanguageService_UpdateLanguage_ReturnUpdatedLang() {
+        Long userId = 1L;
+        Long languageId = 100L;
+
+        User mockUser = new User();
+        mockUser.setId(userId);
+
+        Language existingLanguage = new Language();
+        existingLanguage.setId(languageId);
+        existingLanguage.setName("Old Name");
+
+        LanguageDto inputDto = new LanguageDto();
+        inputDto.setName("New Name");
+
+        Language updatedLanguage = new Language();
+        updatedLanguage.setId(languageId);
+        updatedLanguage.setName("New Name");
+
+        // Mock behaviors
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(languageRepository.findById(languageId)).thenReturn(Optional.of(existingLanguage));
+        when(languageRepository.save(Mockito.any(Language.class))).thenReturn(updatedLanguage);
+        // Act
+        LanguageDto result = languageService.updateLanguage(userId, languageId, inputDto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("New Name", result.getName());
+        assertEquals(languageId, result.getId());
+    }
+
+    @Test
+    void LanguageService_DeleteLanguage_ReturnLanguageDto() {
+        Language language = new Language();
+        language.setId(1L);
+        language.setName("Romanian");
+
+        when(languageRepository.findById(1L)).thenReturn(Optional.of(language));
+
+        assertDoesNotThrow(() -> languageService.deleteLanguage(1L));
+
     }
 }
