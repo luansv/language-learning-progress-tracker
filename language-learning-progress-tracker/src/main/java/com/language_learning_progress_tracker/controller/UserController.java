@@ -3,7 +3,9 @@ package com.language_learning_progress_tracker.controller;
 import com.language_learning_progress_tracker.dto.UserDto;
 import com.language_learning_progress_tracker.dto.UserOverviewDto;
 import com.language_learning_progress_tracker.dto.UserResponse;
+import com.language_learning_progress_tracker.security.SecurityConfig;
 import com.language_learning_progress_tracker.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
+@SecurityRequirement(name = SecurityConfig.SECURITY)
 public class UserController {
     private UserService userService;
 
