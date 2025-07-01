@@ -43,12 +43,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
-    @PostMapping("user/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> userRegister(@RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
-    }
-
     @PutMapping("user/{id}/update")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable("id") Long userId){
         UserDto response = userService.updateUser(userDto, userId);
