@@ -66,7 +66,7 @@ Make sure your `application.properties` is configured with either H2 or MySQL.
 
 ##  Authentication
 
-- **Register**: `POST /api/user/register`
+- **Register**: `POST /api/auth/register`
 - **Login**: `POST /api/auth/login` → returns a JWT
 - **Authorization**: Add JWT token to headers:
 
@@ -80,7 +80,7 @@ Authorization: Bearer <token>
 
 The following methods use Redis-backed caching:
 
-- `GET /api/users/{id}/overview`
+- `GET /api/user/{id}/overview`
 - `GET /api/languages`
 - Vocab + lesson filters by language (optional)
 
@@ -94,42 +94,6 @@ spring.redis.port=6379
 ```
 
 > Redis container is included in `docker-compose.yml`.
-
----
-
-##  Key Endpoints
-
-###  - User
-
-| Method | Endpoint                   | Description         |
-|--------|----------------------------|---------------------|
-| POST   | `/api/user/register`       | Register            |
-| POST   | `/api/auth/login`          | Authenticate        |
-| GET    | `/api/users/{id}/overview` | Full user overview  |
-| GET    | `/api/users/all`           | List all users      |
-
-###  - Vocabulary
-
-| Method | Endpoint                         | Description              |
-|--------|----------------------------------|--------------------------|
-| POST   | `/api/users/{userId}/vocab`      | Add vocab                |
-| GET    | `/api/users/{userId}/vocab`      | Get all/filter by lang   |
-| GET    | `/api/users/{userId}/vocab/{id}` | Get by ID                |
-
-### - Lessons
-
-| Method | Endpoint                          | Description             |
-|--------|-----------------------------------|-------------------------|
-| POST   | `/api/users/{userId}/lessons`     | Add lesson              |
-| GET    | `/api/users/{userId}/lessons`     | Get all/filter by lang  |
-
-###  - Languages
-
-| Method | Endpoint         | Description        |
-|--------|------------------|--------------------|
-| POST   | `/api/languages` | Create language    |
-| GET    | `/api/languages` | List all (cached)  |
-
 ---
 
 ##  Tests
